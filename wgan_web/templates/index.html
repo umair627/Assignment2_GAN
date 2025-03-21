@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Anime Face Generator</title>
+    <style>
+        /* Center the content for better presentation */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+        img {
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Generated Anime Face</h1>
+    <img id="anime-face" src="{{ image_url }}" alt="Generated Anime Face" width="64" height="64">
+    <button onclick="generateNewImage()">Generate New Image</button>
+    <p>Click the button to generate a new anime face!</p>
+
+    <script>
+        function generateNewImage() {
+            console.log("Button clicked, sending request to /generate");  // Debug log
+            // Make an AJAX request to the Flask backend to generate a new image
+            fetch('/generate', {
+                method: 'GET',
+                cache: 'no-cache'  // Prevent caching of the request
+            })
+            .then(response => {
+                console.log("Response received:", response);  // Debug log
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();  // Expect a JSON response with the new image URL
+            })
+            .then(data => {
+                console.log("Data received:", data);  // Debug log
+                // Update the image source with the new URL, add timestamp to prevent caching
+                const imageUrl = data.image_url + '?t=' + new Date().getTime();
+                document.getElementById('anime-face').src = imageUrl;
+                console.log("Image updated to:", imageUrl);  // Debug log
+            })
+            .catch(error => {
+                console.error('Error generating new image:', error);
+                alert('Failed to generate a new image. Please try again.');
+            });
+        }
+    </script>
+</body>
+</html>
