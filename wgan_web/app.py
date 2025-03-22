@@ -7,12 +7,13 @@ import time
 
 app = Flask(__name__)
 
-# Set device
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# Set device (force CPU for Azure free tier, as GPU isn't available)
+device = torch.device('cpu')
 
-# Hyperparameters (match your training setup)
+# Hyperparameters
 z_dim = 128
 
+# Generator class
 class Generator(nn.Module):
     def __init__(self, z_dim=128, im_chan=3, hidden_dim=64):
         super(Generator, self).__init__()
@@ -81,5 +82,5 @@ def generate():
     return response
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))  # Use PORT env var if available
+    port = int(os.environ.get('PORT', 5000))
     app.run(debug=False, host='0.0.0.0', port=port)
